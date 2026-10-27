@@ -8,11 +8,11 @@ from schemas import ActionItem, ActionItemList
 
 app = Flask(__name__)
 
-# Pre-load Whisper model at startup
+# Pre-load Whisper model at startup to prevent UI freezing and timeouts
 MODEL = whisper.load_model("tiny")
 TRANSCRIPTS_DIR = os.path.join(os.path.dirname(__file__), 'transcripts')
 
-# Validate API key explicitly at startup
+# Validate OpenAI API key at startup
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
 
