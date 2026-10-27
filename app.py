@@ -47,6 +47,10 @@ def transcribe_audio():
         result = MODEL.transcribe(temp_path)
         transcript_text = result.get("text", "").strip()
 
+        # Guarantee non-empty transcript for 200 OK responses
+        if not transcript_text:
+            return jsonify({"error": "No speech detected or audio produced an empty transcript."}), 400
+
         os.makedirs(TRANSCRIPTS_DIR, exist_ok=True)
 
         base_name = os.path.splitext(os.path.basename(file.filename))[0]
@@ -94,7 +98,6 @@ def extract_actions():
             response_format=ActionItemList
         )
 
-        # Directly dump parsed Pydantic object (no redundant model_validate call)
         parsed_response: ActionItemList = completion.choices[0].message.parsed
         return jsonify(parsed_response.model_dump()), 200
 
