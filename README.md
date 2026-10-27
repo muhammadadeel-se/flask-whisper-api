@@ -9,3 +9,8 @@ A Flask REST API that transcribes `.wav` audio files using OpenAI's Whisper mode
 ## Installation & Setup
 
 1. Clone repository:
+### System Dependencies
+OpenAI Whisper requires **FFmpeg** to process audio files:
+- **Windows:** `winget install Gyan.FFmpeg`
+- **macOS:** `brew install ffmpeg`
+- **Linux (Ubuntu/Debian):** `sudo apt update && sudo apt install -y ffmpeg`
