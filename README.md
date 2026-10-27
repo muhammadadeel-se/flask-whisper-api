@@ -1,6 +1,6 @@
 # Flask Whisper & Action Extraction API
 
-A Flask REST API that transcribes `.wav` audio files using OpenAI's Whisper model and extracts structured action items using OpenAI's Structured Outputs (Pydantic schemas).
+A Flask REST API that transcribes `.wav` audio files using OpenAI's Whisper model and extracts structured action items using OpenAI GPT models.
 
 ## System Prerequisites
 
