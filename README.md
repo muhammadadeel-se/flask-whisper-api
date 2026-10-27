@@ -14,3 +14,9 @@ OpenAI Whisper requires **FFmpeg** to process audio files:
 - **Windows:** `winget install Gyan.FFmpeg`
 - **macOS:** `brew install ffmpeg`
 - **Linux (Ubuntu/Debian):** `sudo apt update && sudo apt install -y ffmpeg`
+## Execution & Running the App
+
+To start the Flask development server on `http://127.0.0.1:5000`:
+
+```bash
+python app.py
