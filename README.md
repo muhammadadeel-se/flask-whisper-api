@@ -2,16 +2,14 @@
 
 A Flask REST API that transcribes `.wav` audio files using OpenAI's Whisper model and extracts structured action items using OpenAI GPT models.
 
-## System Prerequisites
+---
 
-OpenAI Whisper requires **FFmpeg** to process audio files:
-- **Windows:** `winget install Gyan.FFmpeg`
-- **macOS:** `brew install ffmpeg`
-- **Linux (Ubuntu/Debian):** `sudo apt update && sudo apt install -y ffmpeg`
+## 🔑 OpenAI API Key Configuration & Usage
 
-## Installation & Setup
+The `/extract` endpoint requires an active **OpenAI API Key** to communicate with OpenAI's `gpt-4o-mini` model for structured action extraction.
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/muhammadadeel-se/flask-whisper-api.git](https://github.com/muhammadadeel-se/flask-whisper-api.git)
-   cd flask-whisper-api
+### Option 1: Using a `.env` File (Recommended)
+Create a `.env` file in the root directory of your project:
+
+```env
+OPENAI_API_KEY=your_openai_api_key_here

@@ -2,9 +2,13 @@ import os
 import json
 import tempfile
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
 import whisper
 from openai import OpenAI
 from schemas import ActionItem, ActionItemList
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -12,7 +16,7 @@ app = Flask(__name__)
 MODEL = whisper.load_model("tiny")
 TRANSCRIPTS_DIR = os.path.join(os.path.dirname(__file__), 'transcripts')
 
-# Validate OpenAI API key at startup
+# Validate OpenAI API key strictly from environment variable (No hardcoded fallback)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
 
@@ -80,7 +84,7 @@ def transcribe_audio():
 @app.route('/extract-actions', methods=['POST'])
 def extract_actions():
     if not client:
-        return jsonify({"error": "OPENAI_API_KEY is not configured on the server"}), 500
+        return jsonify({"error": "OPENAI_API_KEY is not configured on the server. Please set it in .env or as an environment variable."}), 500
 
     data = request.get_json()
     if not data or 'transcript' not in data:
@@ -92,7 +96,7 @@ def extract_actions():
 
     try:
         completion = client.beta.chat.completions.parse(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": transcript_text}

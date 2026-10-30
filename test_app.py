@@ -3,7 +3,7 @@ import json
 import pytest
 from unittest.mock import patch, MagicMock
 
-os.environ["OPENAI_API_KEY"] = "sk-mock-key-for-unit-testing"
+os.environ["OPENAI_API_KEY"] = "mock-key-testing"
 
 import app as flask_app
 from app import app
