@@ -3,14 +3,10 @@ import json
 import pytest
 from unittest.mock import patch, MagicMock
 
-# Set dummy key for environment isolation
-os.environ["OPENAI_API_KEY"] = "mock-key-for-testing"
-
 import app as flask_app
 from app import app
 from schemas import ActionItem, ActionItemList
 
-# Mock OpenAI client instance on app startup
 flask_app.client = MagicMock()
 
 
@@ -55,7 +51,6 @@ def test_transcribe_empty_audio_returns_error(client):
 
 
 def test_extract_endpoint(client):
-    # Instantiate Pydantic mock data directly as per evaluation guide
     mock_parsed_data = ActionItemList(
         actions=[
             ActionItem(type="schedule", details="Patient John Doe, 10/12/2024, 10:00 AM")

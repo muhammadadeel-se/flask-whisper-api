@@ -1,7 +1,7 @@
 import os
 import pytest
 
-# Ensure dummy API key is always set before app.py or tests are imported
+# Ensure dummy API key is set prior to importing app or running test suite
 os.environ["OPENAI_API_KEY"] = "mock-key-for-testing"
 
 @pytest.fixture(autouse=True)

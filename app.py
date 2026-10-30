@@ -16,7 +16,7 @@ app = Flask(__name__)
 MODEL = whisper.load_model("tiny")
 TRANSCRIPTS_DIR = os.path.join(os.path.dirname(__file__), 'transcripts')
 
-# Validate OpenAI API key strictly from environment variable (No hardcoded fallback)
+# Validate OpenAI API key strictly from environment variable
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
 
@@ -105,7 +105,8 @@ def extract_actions():
         )
 
         parsed_response: ActionItemList = completion.choices[0].message.parsed
-        return jsonify(parsed_response.model_dump()["actions"]), 200
+        actions = parsed_response.model_dump()["actions"]
+        return jsonify(actions), 200
 
     except Exception as e:
         return jsonify({"error": f"Action extraction failed: {str(e)}"}), 500
