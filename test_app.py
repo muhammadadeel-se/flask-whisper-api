@@ -78,6 +78,8 @@ def test_extract_endpoint(client):
 
     assert isinstance(json_data, list)
     assert len(json_data) == 1
+    assert "type" in json_data[0]
+    assert "details" in json_data[0]
     assert json_data[0]["type"] == "schedule"
     assert "John Doe" in json_data[0]["details"]
 

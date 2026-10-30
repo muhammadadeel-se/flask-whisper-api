@@ -9,7 +9,7 @@ A Flask REST API that transcribes `.wav` audio files using OpenAI's Whisper mode
 The `/extract` endpoint requires an active **OpenAI API Key** to communicate with OpenAI's `gpt-4o-mini` model for structured action extraction.
 
 ### Option 1: Using a `.env` File (Recommended)
-Create a `.env` file in the root directory of your project:
+Create a file named **`.env`** in the root directory of your project:
 
 ```env
 OPENAI_API_KEY=your_openai_api_key_here
