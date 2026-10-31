@@ -21,7 +21,7 @@ def test_client(tmp_path):
     ]
     actions_file.write_text(json.dumps(initial_data), encoding="utf-8")
 
-    # Config updated before creating test client
+    # 1. Config set BEFORE test client is initialized
     app.config["TESTING"] = True
     app.config["ACTIONS_FILE"] = str(actions_file)
 
@@ -90,6 +90,8 @@ def test_confirm_invalid_json_payloads(
     test_client, invalid_payload, expected_error
 ):
     response = test_client.post("/confirm", json=invalid_payload)
+
+    # Assert 400 status and response error string
     assert response.status_code == 400
     data = response.get_json()
     assert "error" in data
