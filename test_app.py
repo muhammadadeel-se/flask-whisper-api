@@ -29,7 +29,8 @@ def test_client(tmp_path):
 
 
 def test_ui_displays_actions_with_edit_fields(test_client):
-    response = test_client.get("/")
+    # Test dedicated GET /confirm route
+    response = test_client.get("/confirm")
     assert response.status_code == 200
 
     html_content = response.data.decode("utf-8")
@@ -37,7 +38,6 @@ def test_ui_displays_actions_with_edit_fields(test_client):
     assert "Initial Task Two" in html_content
     assert '<input type="text"' in html_content
     assert '<select id="status-act_101"' in html_content
-
 
 def test_editing_action_updates_json_file(test_client, tmp_path):
     actions_file = tmp_path / "actions.json"

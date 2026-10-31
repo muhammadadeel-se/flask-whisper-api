@@ -35,30 +35,33 @@ def load_actions():
 
 @app.route("/")
 def index():
+    # Root route redirects to /confirm
+    return render_template("index.html", actions=load_actions())
+
+
+@app.route("/confirm", methods=["GET", "POST"])
+def confirm():
+    if request.method == "POST":
+        data = request.get_json()
+
+        if not data or "actions" not in data:
+            return (
+                jsonify(
+                    {"error": "Invalid payload format. Expected key 'actions'."}
+                ),
+                400,
+            )
+
+        actions = data["actions"]
+        if not isinstance(actions, list):
+            return jsonify({"error": "Field 'actions' must be a list."}), 400
+
+        filepath = app.config["ACTIONS_FILE"]
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(actions, f, indent=2)
+
+        return jsonify({"status": "success", "count": len(actions)}), 200
+
+    # GET request: Render the confirmation UI directly on /confirm
     actions = load_actions()
     return render_template("index.html", actions=actions)
-
-
-@app.route("/confirm", methods=["POST"])
-def confirm():
-    data = request.get_json()
-
-    if not data or "actions" not in data:
-        return (
-            jsonify({"error": "Invalid payload format. Expected key 'actions'."}),
-            400,
-        )
-
-    actions = data["actions"]
-    if not isinstance(actions, list):
-        return jsonify({"error": "Field 'actions' must be a list."}), 400
-
-    filepath = app.config["ACTIONS_FILE"]
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(actions, f, indent=2)
-
-    return jsonify({"status": "success", "count": len(actions)}), 200
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
