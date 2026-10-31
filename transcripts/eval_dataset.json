@@ -1,0 +1,56 @@
+[
+  {
+    "id": "eval_01",
+    "transcript": "Let's schedule a sprint planning session for tomorrow at 10 AM.",
+    "expected_actions": [
+      {
+        "type": "Schedule",
+        "description": "Sprint planning session tomorrow at 10 AM"
+      }
+    ]
+  },
+  {
+    "id": "eval_02",
+    "transcript": "Please send the weekly status report to the client before 5 PM.",
+    "expected_actions": [
+      {
+        "type": "Task",
+        "description": "Send weekly status report to client before 5 PM"
+      }
+    ]
+  },
+  {
+    "id": "eval_03",
+    "transcript": "Remind John to review the pull request for the login service.",
+    "expected_actions": [
+      {
+        "type": "Reminder",
+        "description": "Remind John to review login service pull request"
+      }
+    ]
+  },
+  {
+    "id": "eval_04",
+    "transcript": "Assign the database migration task to Sara and follow up on Friday.",
+    "expected_actions": [
+      {
+        "type": "Task",
+        "description": "Assign database migration to Sara"
+      },
+      {
+        "type": "Follow-up",
+        "description": "Follow up on database migration on Friday"
+      }
+    ]
+  },
+  {
+    "id": "eval_05",
+    "transcript": "Schedule a call with DevOps to discuss server deployment.",
+    "expected_actions": [
+      {
+        "type": "Schedule",
+        "description": "Call with DevOps regarding server deployment"
+      }
+    ]
+  }
+]
