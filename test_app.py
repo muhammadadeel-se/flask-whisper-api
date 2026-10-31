@@ -21,7 +21,6 @@ def test_client(tmp_path):
     ]
     actions_file.write_text(json.dumps(initial_data), encoding="utf-8")
 
-    # 1. Set config BEFORE test_client creation (Guide Step 1)
     app.config["TESTING"] = True
     app.config["ACTIONS_FILE"] = str(actions_file)
 
@@ -76,7 +75,6 @@ def test_editing_action_updates_json_file(test_client, tmp_path):
     assert stored_file_data[0]["status"] == "confirmed"
 
 
-# Explicit standalone test matching mentor guide Step 2 & 3
 def test_missing_actions_key(test_client):
     payload = {}
     response = test_client.post("/confirm", json=payload)
