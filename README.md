@@ -1,15 +1,24 @@
-# Flask Whisper & Action Extraction API
+# Confirmation UI and Persistence
 
-A Flask REST API that transcribes `.wav` audio files using OpenAI's Whisper model and extracts structured action items using OpenAI GPT models.
+A Flask-based web application that displays a list of action items with editable fields, allowing users to modify descriptions and statuses, and persist the confirmed updates directly to `actions.json`.
 
 ---
 
-## 🔑 OpenAI API Key Configuration & Usage
+## Features & Acceptance Criteria
 
-The `/extract` endpoint requires an active **OpenAI API Key** to communicate with OpenAI's `gpt-4o-mini` model for structured action extraction.
+- **Editable UI**: Renders a list of action items with input fields for description and dropdowns for status.
+- **JSON Persistence**: Submitting edits sends a POST request via JavaScript `fetch()` to `/confirm`, updating `actions.json`.
+- **Automated Test Suite**: Includes `pytest` tests using Pytest's `tmp_path` fixture to verify UI rendering and file persistence in total isolation from production data.
 
-### Option 1: Using a `.env` File (Recommended)
-Create a file named **`.env`** in the root directory of your project:
+---
 
-```env
-OPENAI_API_KEY=your_openai_api_key_here
+## Project Structure
+
+```text
+.
+├── app.py              # Flask server and file persistence routing
+├── templates/
+│   └── index.html      # Jinja HTML UI with embedded edit form and JavaScript submit logic
+├── test_app.py         # Pytest suite verifying UI rendering and file updates
+├── actions.json        # Stored action records (auto-generated if missing)
+└── README.md           # Project documentation
