@@ -5,6 +5,7 @@ from app import app
 
 @pytest.fixture
 def test_client(tmp_path):
+    # Setup temporary actions.json inside pytest's isolated tmp_path directory
     actions_file = tmp_path / "actions.json"
 
     initial_data = [
@@ -28,8 +29,13 @@ def test_client(tmp_path):
         yield client
 
 
+def test_root_redirects_to_confirm(test_client):
+    response = test_client.get("/")
+    assert response.status_code == 302
+    assert "/confirm" in response.headers["Location"]
+
+
 def test_ui_displays_actions_with_edit_fields(test_client):
-    # Test dedicated GET /confirm route
     response = test_client.get("/confirm")
     assert response.status_code == 200
 
@@ -38,6 +44,7 @@ def test_ui_displays_actions_with_edit_fields(test_client):
     assert "Initial Task Two" in html_content
     assert '<input type="text"' in html_content
     assert '<select id="status-act_101"' in html_content
+
 
 def test_editing_action_updates_json_file(test_client, tmp_path):
     actions_file = tmp_path / "actions.json"

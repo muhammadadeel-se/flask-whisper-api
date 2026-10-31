@@ -1,6 +1,6 @@
 import json
 import os
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 
 app = Flask(__name__)
 app.config["ACTIONS_FILE"] = os.getenv("ACTIONS_FILE", "actions.json")
@@ -35,8 +35,8 @@ def load_actions():
 
 @app.route("/")
 def index():
-    # Root route redirects to /confirm
-    return render_template("index.html", actions=load_actions())
+    # 1. Root route redirects to /confirm
+    return redirect(url_for("confirm"))
 
 
 @app.route("/confirm", methods=["GET", "POST"])
@@ -62,6 +62,9 @@ def confirm():
 
         return jsonify({"status": "success", "count": len(actions)}), 200
 
-    # GET request: Render the confirmation UI directly on /confirm
     actions = load_actions()
     return render_template("index.html", actions=actions)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
