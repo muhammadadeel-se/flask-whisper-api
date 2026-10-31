@@ -21,7 +21,7 @@ def test_client(tmp_path):
     ]
     actions_file.write_text(json.dumps(initial_data), encoding="utf-8")
 
-    # 1. Config set BEFORE test client is initialized
+    # 1. Set config BEFORE test_client creation (Guide Step 1)
     app.config["TESTING"] = True
     app.config["ACTIONS_FILE"] = str(actions_file)
 
@@ -67,7 +67,6 @@ def test_editing_action_updates_json_file(test_client, tmp_path):
     assert response.status_code == 200
     assert response.json["status"] == "success"
 
-    # Deserialize using json.loads for dictionary assertions
     stored_file_data = json.loads(actions_file.read_text(encoding="utf-8"))
     assert len(stored_file_data) == 2
     assert stored_file_data[0]["id"] == "act_101"
@@ -75,6 +74,16 @@ def test_editing_action_updates_json_file(test_client, tmp_path):
         stored_file_data[0]["description"] == "Updated Task One Description"
     )
     assert stored_file_data[0]["status"] == "confirmed"
+
+
+# Explicit standalone test matching mentor guide Step 2 & 3
+def test_missing_actions_key(test_client):
+    payload = {}
+    response = test_client.post("/confirm", json=payload)
+
+    assert response.status_code == 400
+    json_body = response.get_json()
+    assert json_body["error"] == "Invalid payload format. Expected key 'actions'."
 
 
 @pytest.mark.parametrize(
@@ -90,8 +99,6 @@ def test_confirm_invalid_json_payloads(
     test_client, invalid_payload, expected_error
 ):
     response = test_client.post("/confirm", json=invalid_payload)
-
-    # Assert 400 status and response error string
     assert response.status_code == 400
     data = response.get_json()
     assert "error" in data
