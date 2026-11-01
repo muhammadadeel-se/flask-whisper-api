@@ -22,3 +22,9 @@ A Flask-based web application that displays a list of action items with editable
 ├── test_app.py         # Pytest suite verifying UI rendering and file updates
 ├── actions.json        # Stored action records (auto-generated if missing)
 └── README.md           # Project documentation
+## Accuracy Evaluation
+
+Run the accuracy evaluation CLI script to benchmark model predictions against the ground truth dataset:
+
+```bash
+python evaluate.py --dataset transcripts/eval_dataset.json
