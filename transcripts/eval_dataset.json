@@ -7,6 +7,12 @@
         "type": "Schedule",
         "description": "Sprint planning session tomorrow at 10 AM"
       }
+    ],
+    "predicted_actions": [
+      {
+        "type": "Schedule",
+        "description": "Sprint planning session tomorrow at 10 AM"
+      }
     ]
   },
   {
@@ -17,12 +23,24 @@
         "type": "Task",
         "description": "Send weekly status report to client before 5 PM"
       }
+    ],
+    "predicted_actions": [
+      {
+        "type": "Task",
+        "description": "Send weekly status report to client before 5 PM"
+      }
     ]
   },
   {
     "id": "eval_03",
     "transcript": "Remind John to review the pull request for the login service.",
     "expected_actions": [
+      {
+        "type": "Reminder",
+        "description": "Remind John to review login service pull request"
+      }
+    ],
+    "predicted_actions": [
       {
         "type": "Reminder",
         "description": "Remind John to review login service pull request"
@@ -41,12 +59,28 @@
         "type": "Follow-up",
         "description": "Follow up on database migration on Friday"
       }
+    ],
+    "predicted_actions": [
+      {
+        "type": "Task",
+        "description": "Assign database migration to Sara"
+      },
+      {
+        "type": "Follow-up",
+        "description": "Follow up on database migration on Friday"
+      }
     ]
   },
   {
     "id": "eval_05",
     "transcript": "Schedule a call with DevOps to discuss server deployment.",
     "expected_actions": [
+      {
+        "type": "Schedule",
+        "description": "Call with DevOps regarding server deployment"
+      }
+    ],
+    "predicted_actions": [
       {
         "type": "Schedule",
         "description": "Call with DevOps regarding server deployment"
