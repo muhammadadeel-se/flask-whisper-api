@@ -1,71 +1,124 @@
 import json
 import os
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask import Flask, jsonify, render_template, request
+from openai import OpenAI
 
 app = Flask(__name__)
-app.config["ACTIONS_FILE"] = os.getenv("ACTIONS_FILE", "actions.json")
 
-DEFAULT_ACTIONS = [
-    {
-        "id": "act_001",
-        "description": "Verify environment variables",
-        "status": "pending",
-    },
-    {
-        "id": "act_002",
-        "description": "Run automated test suite",
-        "status": "pending",
-    },
-]
+# Initialize OpenAI Client (uses OPENAI_API_KEY environment variable)
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-
-def load_actions():
-    filepath = app.config["ACTIONS_FILE"]
-    if not os.path.exists(filepath):
-        with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(DEFAULT_ACTIONS, f, indent=2)
-        return DEFAULT_ACTIONS
-
-    with open(filepath, "r", encoding="utf-8") as f:
-        try:
-            return json.load(f)
-        except json.JSONDecodeError:
-            return []
+CONFIRMED_ACTIONS_FILE = os.path.join("data", "confirmed_actions.json")
+os.makedirs("data", exist_ok=True)
 
 
 @app.route("/")
 def index():
-    # 1. Root route redirects to /confirm
-    return redirect(url_for("confirm"))
+    return render_template("index.html")
 
 
-@app.route("/confirm", methods=["GET", "POST"])
-def confirm():
-    if request.method == "POST":
-        data = request.get_json()
+@app.route("/upload", methods=["POST"])
+def upload_audio():
+    """Endpoint to upload an audio file and generate its transcript using Whisper API."""
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
 
-        if not data or "actions" not in data:
-            return (
-                jsonify(
-                    {"error": "Invalid payload format. Expected key 'actions'."}
-                ),
-                400,
+    audio_file = request.files["file"]
+    if audio_file.filename == "":
+        return jsonify({"error": "No file selected"}), 400
+
+    upload_folder = os.path.join("transcripts", "uploads")
+    os.makedirs(upload_folder, exist_ok=True)
+    file_path = os.path.join(upload_folder, audio_file.filename)
+    audio_file.save(file_path)
+
+    try:
+        with open(file_path, "rb") as f:
+            transcription = client.audio.transcriptions.create(
+                model="whisper-1", file=f
             )
+        transcript_text = transcription.text
+        return jsonify(
+            {
+                "status": "success",
+                "filename": audio_file.filename,
+                "transcript": transcript_text,
+            }
+        )
+    except Exception as e:
+        return jsonify({"error": f"Audio transcription failed: {str(e)}"}), 500
 
-        actions = data["actions"]
-        if not isinstance(actions, list):
-            return jsonify({"error": "Field 'actions' must be a list."}), 400
 
-        filepath = app.config["ACTIONS_FILE"]
-        with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(actions, f, indent=2)
+@app.route("/extract", methods=["POST"])
+def extract_actions():
+    """Endpoint to extract structured action items from transcript text."""
+    data = request.get_json() or {}
+    transcript = data.get("transcript", "")
 
-        return jsonify({"status": "success", "count": len(actions)}), 200
+    if not transcript:
+        return jsonify({"error": "Transcript text is required"}), 400
 
-    actions = load_actions()
-    return render_template("index.html", actions=actions)
+    prompt = f"""
+Analyze the following transcript and extract action items. 
+Categorize each action into one of these types: Schedule, Task, Reminder, Follow-up.
+
+Return ONLY a valid JSON array of objects with keys "type" and "description".
+
+Transcript:
+"{transcript}"
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0,
+        )
+        content = response.choices[0].message.content.strip()
+
+        if content.startswith("```"):
+            content = content.split("```")[1]
+            if content.startswith("json"):
+                content = content[4:]
+        content = content.strip()
+
+        actions = json.loads(content)
+        return jsonify({"transcript": transcript, "actions": actions})
+    except Exception as e:
+        return jsonify({"error": f"Action extraction failed: {str(e)}"}), 500
+
+
+@app.route("/confirm", methods=["POST"])
+def confirm_actions():
+    """Endpoint to confirm and store extracted action items."""
+    data = request.get_json() or {}
+    confirmed_actions = data.get("actions", [])
+
+    if not isinstance(confirmed_actions, list):
+        return jsonify({"error": "Actions must be a list"}), 400
+
+    existing = []
+    if os.path.exists(CONFIRMED_ACTIONS_FILE):
+        try:
+            with open(CONFIRMED_ACTIONS_FILE, "r", encoding="utf-8") as f:
+                existing = json.load(f)
+        except Exception:
+            existing = []
+
+    existing.extend(confirmed_actions)
+
+    with open(CONFIRMED_ACTIONS_FILE, "w", encoding="utf-8") as f:
+        json.dump(existing, f, indent=2)
+
+    return jsonify(
+        {
+            "status": "success",
+            "message": "Actions confirmed and stored successfully",
+            "total_saved": len(existing),
+        }
+    )
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
